@@ -2,6 +2,8 @@ using GerenciarTransacoes.Dominio.Interfaces; // Para ITransactionRepository
 using GerenciarTransacoes.Infraestrutura.Repositories; // Para TransactionRepository
 using GerenciarTransacoes.Aplicacao.UseCases; // Para ListTransactionsUseCase <--- NOVO USING
 using Microsoft.Extensions.Configuration; // Para acessar as configurações do appsettings.json
+using GerenciarTransacoes.Aplicacao.Interfaces; // Para IMessageProducer
+using GerenciarTransacoes.Infraestrutura.MessageProducers; // Para AzureServiceBusProducer
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +41,26 @@ builder.Services.AddScoped<ListTransactionsUseCase>();
 // Registra o caso de uso de listagem de transações
 builder.Services.AddScoped<ListTransactionsUseCase>();
 builder.Services.AddScoped<CreateTransactionUseCase>(); // <--- ADICIONE ESTA LINHA
+
+
+// Registra o produtor de mensagens do Azure Service Bus
+builder.Services.AddSingleton<IMessageProducer>(sp =>
+{
+    var configuration = sp.GetRequiredService<IConfiguration>();
+    var connectionString = configuration.GetSection("ServiceBusSettings:ConnectionString").Value;
+    var queueName = configuration.GetSection("ServiceBusSettings:QueueName").Value;
+
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        throw new InvalidOperationException("Service Bus ConnectionString não configurada em appsettings.json.");
+    }
+    if (string.IsNullOrEmpty(queueName))
+    {
+        throw new InvalidOperationException("Service Bus QueueName não configurado em appsettings.json.");
+    }
+
+    return new AzureServiceBusProducer(connectionString, queueName);
+});
 
 
 var app = builder.Build();

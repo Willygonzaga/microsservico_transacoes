@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using GerenciarTransacoes.Dominio;
 using GerenciarTransacoes.Dominio.Interfaces; // Para ITransactionRepository
+using GerenciarTransacoes.Aplicacao.Interfaces; // Para IMessageProducer <--- NOVO USING
 
 namespace GerenciarTransacoes.Aplicacao.UseCases
 {
@@ -16,15 +17,18 @@ namespace GerenciarTransacoes.Aplicacao.UseCases
     public class CreateTransactionUseCase
     {
         private readonly ITransactionRepository _transactionRepository;
+        private readonly IMessageProducer _messageProducer; // <--- ADICIONE ESTA LINHA
 
-        public CreateTransactionUseCase(ITransactionRepository transactionRepository)
+        public CreateTransactionUseCase(ITransactionRepository transactionRepository, // <--- MODIFIQUE ESTE CONSTRUTOR
+                                        IMessageProducer messageProducer) // <--- ADICIONE ESTE PARÂMETRO
         {
             _transactionRepository = transactionRepository;
+            _messageProducer = messageProducer; // <--- ADICIONE ESTA LINHA
         }
 
         public async Task<Transaction> Execute(CreateTransactionCommand command)
         {
-            // Aqui podemos adicionar validações de negócio, se necessário
+            // ... (código de validação existente)
             if (command.Amount <= 0)
             {
                 throw new ArgumentException("O valor da transação deve ser positivo.");
@@ -38,19 +42,23 @@ namespace GerenciarTransacoes.Aplicacao.UseCases
                 throw new ArgumentException("O tipo da transação deve ser 'Credit' ou 'Debit'.");
             }
 
-
             // Cria uma nova instância da entidade de domínio Transaction
             var transaction = new Transaction
             {
-                Id = Guid.NewGuid().ToString(), // Gera um ID único para a transação
+                Id = Guid.NewGuid().ToString(),
                 Amount = command.Amount,
                 Description = command.Description,
-                Date = DateTime.UtcNow, // Usa UTC para consistência global
+                Date = DateTime.UtcNow,
                 Type = command.Type
             };
 
             // Adiciona a transação ao banco de dados via repositório
             await _transactionRepository.AddAsync(transaction);
+
+            // Envia uma mensagem para o Service Bus sobre a nova transação
+            // Podemos enviar a própria transação ou um DTO mais leve
+            // Por simplicidade, vamos enviar a transação completa por enquanto
+            await _messageProducer.SendMessageAsync(transaction, "transactions-queue"); // <--- ADICIONE ESTA LINHA
 
             return transaction; // Retorna a transação criada
         }
