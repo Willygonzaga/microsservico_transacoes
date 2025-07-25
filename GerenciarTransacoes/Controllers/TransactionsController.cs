@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System;
 using GerenciarTransacoes.Dominio;
-using GerenciarTransacoes.Aplicacao.UseCases; // Adicione esta linha
+using GerenciarTransacoes.Aplicacao.UseCases;
+
+using System.Threading.Tasks; // <--- ADICIONE ESTA LINHA
 
 namespace GerenciarTransacoes.Controllers
 {
@@ -10,14 +12,19 @@ namespace GerenciarTransacoes.Controllers
     [Route("[controller]")]
     public class TransactionsController : ControllerBase
     {
-        // Removemos a lista _transactions mockada daqui
+        private readonly ListTransactionsUseCase _listTransactionsUseCase; // Adicione esta linha
+
+        // Construtor que recebe o caso de uso por Injeção de Dependência
+        public TransactionsController(ListTransactionsUseCase listTransactionsUseCase) // Adicione este construtor
+        {
+            _listTransactionsUseCase = listTransactionsUseCase;
+        }
 
         [HttpGet]
-        public IEnumerable<Transaction> Get()
+        public async Task<IEnumerable<Transaction>> Get() // O método agora é assíncrono
         {
-            // Instancia o caso de uso e executa-o
-            var useCase = new ListTransactionsUseCase();
-            return useCase.Execute();
+            // Chama o caso de uso injetado
+            return await _listTransactionsUseCase.Execute();
         }
     }
 }

@@ -1,5 +1,6 @@
 using GerenciarTransacoes.Dominio.Interfaces; // Para ITransactionRepository
 using GerenciarTransacoes.Infraestrutura.Repositories; // Para TransactionRepository
+using GerenciarTransacoes.Aplicacao.UseCases; // Para ListTransactionsUseCase <--- NOVO USING
 using Microsoft.Extensions.Configuration; // Para acessar as configurações do appsettings.json
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 
 // Adicione suporte para controladores MVC (API)
-builder.Services.AddControllers(); // LINHA ADICIONADA/DESCOMENTADA
+builder.Services.AddControllers();
 
 // Adiciona o repositório MongoDB como um serviço para Injeção de Dependência
 builder.Services.AddSingleton<ITransactionRepository>(sp =>
@@ -32,6 +33,10 @@ builder.Services.AddSingleton<ITransactionRepository>(sp =>
     return new TransactionRepository(connectionString, databaseName);
 });
 
+// Registra o caso de uso de listagem de transações para Injeção de Dependência <--- NOVA SEÇÃO
+builder.Services.AddScoped<ListTransactionsUseCase>();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -40,7 +45,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-// app.UseHttpsRedirection(); // LINHA COMENTADA ANTERIORMENTE
+// app.UseHttpsRedirection(); // Continua comentada
 
 // Mantendo o endpoint de exemplo WeatherForecast da Minimal API
 var summaries = new[]
@@ -63,7 +68,7 @@ app.MapGet("/weatherforecast", () =>
 .WithName("GetWeatherForecast");
 
 // Mapeia os controladores para que a aplicação consiga encontrá-los
-app.MapControllers(); // LINHA ADICIONADA/DESCOMENTADA
+app.MapControllers();
 
 app.Run();
 
