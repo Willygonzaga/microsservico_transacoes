@@ -36,6 +36,10 @@ builder.Services.AddSingleton<ITransactionRepository>(sp =>
 // Registra o caso de uso de listagem de transações para Injeção de Dependência <--- NOVA SEÇÃO
 builder.Services.AddScoped<ListTransactionsUseCase>();
 
+// Registra o caso de uso de listagem de transações
+builder.Services.AddScoped<ListTransactionsUseCase>();
+builder.Services.AddScoped<CreateTransactionUseCase>(); // <--- ADICIONE ESTA LINHA
+
 
 var app = builder.Build();
 
