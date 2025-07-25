@@ -4,6 +4,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+// Adicione suporte para controladores MVC (API)
+builder.Services.AddControllers(); // LINHA ADICIONADA/DESCOMENTADA
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -12,8 +15,9 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection(); // LINHA COMENTADA ANTERIORMENTE
 
+// Mantendo o endpoint de exemplo WeatherForecast da Minimal API
 var summaries = new[]
 {
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
@@ -32,6 +36,9 @@ app.MapGet("/weatherforecast", () =>
     return forecast;
 })
 .WithName("GetWeatherForecast");
+
+// Mapeia os controladores para que a aplicação consiga encontrá-los
+app.MapControllers(); // LINHA ADICIONADA/DESCOMENTADA
 
 app.Run();
 
