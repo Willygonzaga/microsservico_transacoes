@@ -10,4 +10,10 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.7" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\src\GerenciarTransacoes.Aplicacao\GerenciarTransacoes.Aplicacao.csproj" />
+    <ProjectReference Include="..\src\GerenciarTransacoes.Infraestrutura\GerenciarTransacoes.Infraestrutura.csproj" />
+    <ProjectReference Include="..\src\GerenciarTransacoes.Dominio\GerenciarTransacoes.Dominio.csproj" />
+  </ItemGroup>
+
 </Project>
