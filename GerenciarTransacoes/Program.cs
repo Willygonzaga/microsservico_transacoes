@@ -1,3 +1,7 @@
+using GerenciarTransacoes.Dominio.Interfaces; // Para ITransactionRepository
+using GerenciarTransacoes.Infraestrutura.Repositories; // Para TransactionRepository
+using Microsoft.Extensions.Configuration; // Para acessar as configurações do appsettings.json
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +10,27 @@ builder.Services.AddOpenApi();
 
 // Adicione suporte para controladores MVC (API)
 builder.Services.AddControllers(); // LINHA ADICIONADA/DESCOMENTADA
+
+// Adiciona o repositório MongoDB como um serviço para Injeção de Dependência
+builder.Services.AddSingleton<ITransactionRepository>(sp =>
+{
+    // Pega as configurações do appsettings.json
+    var configuration = sp.GetRequiredService<IConfiguration>();
+    var connectionString = configuration.GetSection("MongoDbSettings:ConnectionString").Value;
+    var databaseName = configuration.GetSection("MongoDbSettings:DatabaseName").Value;
+
+    // Valida se as strings de conexão e nome do banco de dados foram encontradas
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        throw new InvalidOperationException("MongoDB ConnectionString não configurada em appsettings.json.");
+    }
+    if (string.IsNullOrEmpty(databaseName))
+    {
+        throw new InvalidOperationException("MongoDB DatabaseName não configurado em appsettings.json.");
+    }
+
+    return new TransactionRepository(connectionString, databaseName);
+});
 
 var app = builder.Build();
 
