@@ -32,7 +32,9 @@ Você irá precisar de "chaves" para se conectar ao MongoDB e ao Azure Service B
     * **Azure Service Bus:** Acesse [portal.azure.com](https://portal.azure.com/), crie uma conta (usei de estudante). Crie um "Namespace" (usei `sb-gerenciartransacoes-willy`) e uma "Fila" dentro dele (usei `transactions-queue`). Pegue a **Primary Connection String** da política `RootManageSharedAccessKey` do seu Namespace.
 
 2.  **Crie e configure o arquivo de chaves:**
-    Abra o arquivo `GerenciarTransacoes/appsettings.Development.json` e cole o seguinte conteúdo. **Substitua `SUA_CHAVE_DE_ACESSO_COMPARTILHADA_AQUI` pela sua chave real do Azure Service Bus.**
+    Crie o arquivo "appsettings.Development.json" ddentro de "GerenciarTransacoes" e então ficará assim: `GerenciarTransacoes/appsettings.Development.json`, depois cole o seguinte conteúdo:
+
+    **Substitua `SUA_CHAVE_DE_ACESSO_COMPARTILHADA_AQUI` pela sua chave real do Azure Service Bus.**
 
     ```json
     {
