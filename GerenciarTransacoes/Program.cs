@@ -8,8 +8,7 @@ using GerenciarTransacoes.Infraestrutura.MessageProducers; // Para AzureServiceB
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddSwaggerGen(); // <--- SUBSTITUA AddOpenApi() POR ESTA LINHA
 
 // Adicione suporte para controladores MVC (API)
 builder.Services.AddControllers();
@@ -68,7 +67,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger(); // <--- ADICIONE ESTA LINHA
+    app.UseSwaggerUI(); // <--- ADICIONE ESTA LINHA
 }
 
 // app.UseHttpsRedirection(); // Continua comentada
