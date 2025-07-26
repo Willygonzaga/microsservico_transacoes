@@ -1,12 +1,18 @@
 using System.Collections.Generic;
-using System.Threading.Tasks; // Para usar Task (métodos assíncronos)
+using System.Threading.Tasks;
 
 namespace GerenciarTransacoes.Dominio.Interfaces
 {
+    // Define o contrato (interface) para operações de persistência de transações.
+    // Esta interface é a "porta" na Clean Architecture para o domínio interagir com dados.
     public interface ITransactionRepository
     {
-        Task AddAsync(Transaction transaction); // Adicionar uma nova transação
-        Task<IEnumerable<Transaction>> GetAllAsync(); // Obter todas as transações
-        // Outros métodos como GetByIdAsync, UpdateAsync, DeleteAsync podem ser adicionados depois
+        // Adiciona uma nova transação ao repositório de forma assíncrona.
+        Task AddAsync(Transaction transaction); 
+        
+        // Obtém todas as transações do repositório de forma assíncrona.
+        Task<IEnumerable<Transaction>> GetAllAsync(); 
+        
+        // Outros métodos como GetByIdAsync, UpdateAsync, DeleteAsync podem ser adicionados depois.
     }
 }

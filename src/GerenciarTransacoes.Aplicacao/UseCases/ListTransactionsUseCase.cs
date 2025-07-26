@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using System.Threading.Tasks; // Adicione para suportar Task
+using System.Threading.Tasks;
 using GerenciarTransacoes.Dominio;
-using GerenciarTransacoes.Dominio.Interfaces; // Para ITransactionRepository
+using GerenciarTransacoes.Dominio.Interfaces;
 
 namespace GerenciarTransacoes.Aplicacao.UseCases
 {
@@ -9,15 +9,14 @@ namespace GerenciarTransacoes.Aplicacao.UseCases
     {
         private readonly ITransactionRepository _transactionRepository;
 
-        // O construtor agora recebe a interface do repositório
         public ListTransactionsUseCase(ITransactionRepository transactionRepository)
         {
             _transactionRepository = transactionRepository;
         }
 
-        public async Task<IEnumerable<Transaction>> Execute() // O método agora é assíncrono
+        // Obtém todas as transações do repositório de forma assíncrona.
+        public async Task<IEnumerable<Transaction>> Execute()
         {
-            // Usa o repositório para obter as transações do banco de dados
             return await _transactionRepository.GetAllAsync();
         }
     }

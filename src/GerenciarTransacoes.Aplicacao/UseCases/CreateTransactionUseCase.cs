@@ -1,34 +1,34 @@
 using System;
 using System.Threading.Tasks;
 using GerenciarTransacoes.Dominio;
-using GerenciarTransacoes.Dominio.Interfaces; // Para ITransactionRepository
-using GerenciarTransacoes.Aplicacao.Interfaces; // Para IMessageProducer <--- NOVO USING
+using GerenciarTransacoes.Dominio.Interfaces;
+using GerenciarTransacoes.Aplicacao.Interfaces;
 
 namespace GerenciarTransacoes.Aplicacao.UseCases
 {
-    // Classe de comando para receber os dados de entrada para criação
+    // Representa os dados de entrada para a criação de uma nova transação.
     public class CreateTransactionCommand
     {
         public decimal Amount { get; set; }
         public string Description { get; set; }
-        public string Type { get; set; } // "Credit" ou "Debit"
+        public string Type { get; set; } // Pode ser "Credit" para entrada ou "Debit" para saída
     }
 
     public class CreateTransactionUseCase
     {
         private readonly ITransactionRepository _transactionRepository;
-        private readonly IMessageProducer _messageProducer; // <--- ADICIONE ESTA LINHA
+        private readonly IMessageProducer _messageProducer;
 
-        public CreateTransactionUseCase(ITransactionRepository transactionRepository, // <--- MODIFIQUE ESTE CONSTRUTOR
-                                        IMessageProducer messageProducer) // <--- ADICIONE ESTE PARÂMETRO
+        public CreateTransactionUseCase(ITransactionRepository transactionRepository,
+                                        IMessageProducer messageProducer)
         {
             _transactionRepository = transactionRepository;
-            _messageProducer = messageProducer; // <--- ADICIONE ESTA LINHA
+            _messageProducer = messageProducer;
         }
 
         public async Task<Transaction> Execute(CreateTransactionCommand command)
         {
-            // ... (código de validação existente)
+            // Validações de negócio para os dados de entrada
             if (command.Amount <= 0)
             {
                 throw new ArgumentException("O valor da transação deve ser positivo.");
@@ -45,10 +45,10 @@ namespace GerenciarTransacoes.Aplicacao.UseCases
             // Cria uma nova instância da entidade de domínio Transaction
             var transaction = new Transaction
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = Guid.NewGuid().ToString(), // Gera um ID único para a transação
                 Amount = command.Amount,
                 Description = command.Description,
-                Date = DateTime.UtcNow,
+                Date = DateTime.UtcNow, // Usa a data e hora UTC para consistência global
                 Type = command.Type
             };
 
@@ -56,9 +56,7 @@ namespace GerenciarTransacoes.Aplicacao.UseCases
             await _transactionRepository.AddAsync(transaction);
 
             // Envia uma mensagem para o Service Bus sobre a nova transação
-            // Podemos enviar a própria transação ou um DTO mais leve
-            // Por simplicidade, vamos enviar a transação completa por enquanto
-            await _messageProducer.SendMessageAsync(transaction, "transactions-queue"); // <--- ADICIONE ESTA LINHA
+            await _messageProducer.SendMessageAsync(transaction, "transactions-queue");
 
             return transaction; // Retorna a transação criada
         }

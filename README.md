@@ -1,114 +1,151 @@
 # Microsserviço de Gerenciamento de Transações Financeiras
 
-## Sobre Este Projeto
+Microsserviço feito para **criar e listar transações financeiras**.
 
-Este microsserviço foi desenvolvido em **C# com ASP.NET Core** para gerenciar transações financeiras. Ele permite **criar e listar transações**.
+## O que foi feito:
 
-* Os dados são armazenados no **MongoDB Atlas** (um banco de dados na nuvem).
-* Ao criar uma transação, uma mensagem é enviada para uma fila no **Azure Service Bus**, permitindo processamentos futuros de forma assíncrona.
-* O projeto segue princípios de **Arquitetura Limpa** e inclui **Testes Unitários** para a lógica de negócio.
+* **Criação e Listagem de Transações:** Registro de novas entradas ou saídas de dinheiro e consultas de todas as transações.
+* **Armazenamento em Nuvem (MongoDB Atlas):** Todas as transações estão sendo guardadas no MongoDB Atlas.
+* **Mensagens Assíncronas (Azure Service Bus):** Ao criar uma transação, uma notificação é enviada para o Azure.
+* **Documentação Interativa (Swagger/OpenAPI):** Implementei o Swagger/OpenAPI para testar a API no navegador.
+* **Pronto para Docker:** Configurei o projeto para rodar em um contêiner Docker.
 
-## O que Você Precisa para Rodar
+## Como Preparar e Rodar o Projeto
 
-Para executar este projeto na sua máquina, você precisará ter instalado:
+Instruções para o projeto rodar:
 
-* **[.NET SDK 9.0 ou mais recente](https://dotnet.microsoft.com/download)**
-* **[Visual Studio Code](https://code.visualstudio.com/)** (com as extensões de C#, C# Dev Kit, NuGet Package Manager)
-* **[Git](https://git-scm.com/downloads)**
-* **Acesso a uma conta no [MongoDB Atlas](https://cloud.mongodb.com/)** (use o plano gratuito M0)
-* **Acesso a uma conta no [Azure](https://portal.azure.com/)** (use uma conta gratuita ou de estudante)
-* **[Thunder Client](https://marketplace.visualstudio.com/items?itemName=rangav.vscode-thunder-client)** (extensão do VS Code) ou Postman/Insomnia, para testar a API.
+### 1. Ferramentas Necessárias
 
-## Como Configurar para Rodar
+Precisa dessas ferramentas:
 
-Para que o projeto funcione, precisa configurar as chaves de conexão. Elas ficarão salvas em um arquivo que o Git ignora, por segurança.
+* **[Docker Desktop](https://www.docker.com/products/docker-desktop/):** Para rodar o projeto em um contêiner.
+* **[.NET SDK 9.0 ou mais recente](https://dotnet.microsoft.com/download):** Para construir e gerenciar o projeto.
+* **[Git](https://git-scm.com/downloads):** Para baixar o código.
+* **[Thunder Client (VS Code Extension)](https://marketplace.visualstudio.com/items?itemName=rangav.vscode-thunder-client):** Uma extensão do VS Code que ajuda a testar a API (Utilizei essa).
 
-### 1. Configure suas Conexões
+### 2. Configuração das Chaves de Conexão
 
-Abra o arquivo `GerenciarTransacoes/appsettings.Development.json` e adicione/atualize as seguintes informações com as **suas próprias chaves e nomes** que você configurou no MongoDB Atlas e no Azure:
+Você irá precisar de "chaves" para se conectar ao MongoDB e ao Azure Service Bus. Por segurança (e o GitHuba não deixar realizar o "push"), essas chaves não ficam no código principal, mas em um arquivo separado que precisa ser criado no seu computador.
 
-```json
-{
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
+1.  **Crie sua conta e serviços na nuvem:**
+    * **MongoDB Atlas:** Acesse [cloud.mongodb.com](https://cloud.mongodb.com/), crie uma conta. Crie um usuário de banco de dados (usei `admin` com a senha `admin2000-07-07`). Pegue a **Connection String** do seu cluster.
+    * **Azure Service Bus:** Acesse [portal.azure.com](https://portal.azure.com/), crie uma conta (usei de estudante). Crie um "Namespace" (usei `sb-gerenciartransacoes-willy`) e uma "Fila" dentro dele (usei `transactions-queue`). Pegue a **Primary Connection String** da política `RootManageSharedAccessKey` do seu Namespace.
+
+2.  **Crie e configure o arquivo de chaves:**
+    Abra o arquivo `GerenciarTransacoes/appsettings.Development.json` e cole o seguinte conteúdo. **Substitua `SUA_CHAVE_DE_ACESSO_COMPARTILHADA_AQUI` pela sua chave real do Azure Service Bus.**
+
+    ```json
+    {
+      "Logging": {
+        "LogLevel": {
+          "Default": "Information",
+          "Microsoft.AspNetCore": "Warning"
+        }
+      },
+      "MongoDbSettings": {
+        "ConnectionString": "mongodb+srv://admin:admin2000-07-07@gerenciartransacoesclus.udlzfm8.mongodb.net/?retryWrites=true&w=majority&appName=GerenciarTransacoesCluster",
+        "DatabaseName": "GerenciarTransacoesDB"
+      },
+      "ServiceBusSettings": {
+        "ConnectionString": "Endpoint=sb://sb-gerenciartransacoes-willy.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SUA_CHAVE_DE_ACESSO_COMPARTILHADA_AQUI",
+        "QueueName": "transactions-queue"
+      }
     }
-  },
-  "MongoDbSettings": {
-    "ConnectionString": "mongodb+srv://admin:admin2000-07-07@gerenciartransacoesclus.udlzfm8.mongodb.net/?retryWrites=true&w=majority&appName=GerenciarTransacoesCluster",
-    "DatabaseName": "GerenciarTransacoesDB"
-  },
-  "ServiceBusSettings": {
-    "ConnectionString": "Endpoint=sb://sb-gerenciartransacoes-willy.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SUA_CHAVE_DE_ACESSO_COMPARTILHADA_AQUI",
-    "QueueName": "transactions-queue"
-  }
-}
+    ```
 
-```
-### 2. Prepare o Projeto
+### 3. Baixar e Preparar o Projeto
 
-1.  **Baixe o código:**
-    Abra seu terminal e baixe o projeto:
+1.  **Baixar o código:**
+    Abra seu terminal e digite:
     ```bash
     git clone [https://github.com/Willygonzaga/microsservico_transacoes.git](https://github.com/Willygonzaga/microsservico_transacoes.git)
+
     cd microsservico_transacoes
     ```
-2.  **Instale as dependências:**
-    Ainda no terminal (na raiz do projeto `microsservico_transacoes`):
+2.  **Construa a imagem Docker:**
+    Ainda no terminal, na pasta `microsservico_transacoes` (a raiz do projeto):
     ```bash
-    dotnet restore
+    docker build -t gerenciartransacoes-api .
     ```
-    Isso vai baixar todas as bibliotecas que o projeto precisa.
+    Este comando vai criar uma "imagem" da aplicação para o Docker.
+
+
 
 ## Como Rodar o Microsserviço
 
+O microsserviço pode ser executado de duas formas principais: usando **Docker** ou diretamente com o **.NET SDK**.
+
+### 1. Rodar com Docker
+
+Depois que a imagem Docker for construída, você pode iniciar o serviço.
+
+1.  **Inicie o contêiner Docker:**
+    No terminal, rode este comando. Ele vai iniciar sua aplicação dentro do Docker e a deixar acessível na porta `5010` do computador.
+
+    ```bash
+    docker run -d -p 5010:8080 --name gerenciartransacoes-app -e "MongoDbSettings__ConnectionString=mongodb+srv://admin:admin2000-07-07@gerenciartransacoesclus.udlzfm8.mongodb.net/?retryWrites=true&w=majority&appName=GerenciarTransacoesCluster" -e "MongoDbSettings__DatabaseName=GerenciarTransacoesDB" -e "ServiceBusSettings__ConnectionString=Endpoint=sb://sb-gerenciartransacoes-willy.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SUA_CHAVE_DE_ACESSO_COMPARTILHADA_AQUI" -e "ServiceBusSettings__QueueName=transactions-queue" gerenciartransacoes-api
+    ```
+    (Precisa substituir `SUA_CHAVE_DE_ACESSO_COMPARTILHADA_AQUI` pela sua chave real).
+
+2.  **Verifique se está rodando:**
+    Para ter certeza que o contêiner iniciou:
+    ```bash
+    docker ps
+    ```
+
+### 2. Rodar Diretamente com .NET SDK
+
+Se não usar Docker:
+
 1.  **Inicie a aplicação:**
-    No terminal, entre na pasta do projeto principal e execute:
+    No terminal, entre na pasta do projeto principal:
     ```bash
     cd GerenciarTransacoes
+
     dotnet run
     ```
-    Aguarde a mensagem "Application started" (aplicação iniciada). O serviço estará disponível em `http://localhost:5010` (ou uma porta parecida que aparecerá no terminal).
+    O serviço vai estar em `http://localhost:5010` (ou uma porta parecida que aparecerá no terminal).
 
-## Como Testar os Endpoints da API
+---
 
-Com o microsserviço rodando, você pode usar o **Thunder Client** no VS Code (foi o que eu usei) para enviar requisições.
 
-Os endereços (endpoints) sempre começam com `/transactions`.
+## Como Testar a API
 
-### 1. Listar Transações (GET)
+Com o microsserviço rodando, você pode testar os endpoints usando o Thunder Client (no VS Code foi o que usei) ou no navegador.
 
-* **Endereço (URL):** `http://localhost:5010/transactions`
+### 1. Documentação Interativa (Swagger/OpenAPI)
+
+Acesse no navegador: `http://localhost:5010/swagger`
+Vai aparecer uma página onde dá para visualizar e testar todos os endpoints da API.
+
+### 2. Listar Transações (GET)
+
+* **URL:** `http://localhost:5010/transactions`
 * **Método:** `GET`
-* **Resultado esperado:** Uma lista de transações em formato JSON. Se o banco estiver vazio, ele retornará `[]`.
+* **Resultado:** Uma lista de transações em formato JSON.
 
-### 2. Criar Transação (POST)
+### 3. Criar Transação (POST)
 
-* **Endereço (URL):** `http://localhost:5010/transactions`
+* **URL:** `http://localhost:5010/transactions`
 * **Método:** `POST`
 * **Corpo do Pedido (JSON que você envia):**
     ```json
     {
       "amount": 150.75,
-      "description": "Exemplo de compra de café",
-      "type": "Debit" // Ou você pode usar "Credit"
+      "description": "Exemplo de compra via Docker",
+      "type": "Debit"
     }
     ```
-* **Resultado esperado:**
-    * `201 Created` (sucesso) e os detalhes da transação criada.
-    * Um erro `400 Bad Request` se os dados enviados estiverem incorretos.
+* **Resultado:** `201 Created` mensagem de sucesso e os detalhes da transação criada.
 
 ## Como Rodar os Testes Unitários
 
-Para garantir que a lógica do projeto está funcionando corretamente:
-
-1.  Abra seu terminal e navegue até a **raiz do repositório**.
-2.  Execute o comando:
+1.  Abra o terminal e navegue até a **raiz do repositório** (`microsservico_transacoes`).
+2.  Execute:
     ```bash
     dotnet test tests/GerenciarTransacoes.Aplicacao.Tests/GerenciarTransacoes.Aplicacao.Tests.csproj
     ```
-    Você verá uma mensagem no final indicando que todos os testes passaram (ex: "bem-sucedido: 8").
+    Vai aparecer uma mensagem no final indicando que todos os testes passaram (ex: "bem-sucedido: 8").
 
 ---
-Desenvolvido por: Willy Gonzaga Balieiro
+Desenvolvido por: Willy Gonzaga
