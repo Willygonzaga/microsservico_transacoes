@@ -45,6 +45,7 @@ Abra o arquivo `GerenciarTransacoes/appsettings.Development.json` e adicione/atu
   }
 }
 
+```
 ### 2. Prepare o Projeto
 
 1.  **Baixe o código:**
