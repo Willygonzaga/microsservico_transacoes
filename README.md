@@ -1,6 +1,6 @@
 # Microsserviço de Gerenciamento de Transações Financeiras
 
-## 🚀 Sobre Este Projeto
+## Sobre Este Projeto
 
 Este microsserviço foi desenvolvido em **C# com ASP.NET Core** para gerenciar transações financeiras. Ele permite **criar e listar transações**.
 
@@ -8,7 +8,7 @@ Este microsserviço foi desenvolvido em **C# com ASP.NET Core** para gerenciar t
 * Ao criar uma transação, uma mensagem é enviada para uma fila no **Azure Service Bus**, permitindo processamentos futuros de forma assíncrona.
 * O projeto segue princípios de **Arquitetura Limpa** e inclui **Testes Unitários** para a lógica de negócio.
 
-## 🛠️ O que Você Precisa para Rodar
+## O que Você Precisa para Rodar
 
 Para executar este projeto na sua máquina, você precisará ter instalado:
 
@@ -19,7 +19,7 @@ Para executar este projeto na sua máquina, você precisará ter instalado:
 * **Acesso a uma conta no [Azure](https://portal.azure.com/)** (use uma conta gratuita ou de estudante)
 * **[Thunder Client](https://marketplace.visualstudio.com/items?itemName=rangav.vscode-thunder-client)** (extensão do VS Code) ou Postman/Insomnia, para testar a API.
 
-## ⚙️ Como Configurar para Rodar
+## Como Configurar para Rodar
 
 Para que o projeto funcione, precisa configurar as chaves de conexão. Elas ficarão salvas em um arquivo que o Git ignora, por segurança.
 
@@ -60,7 +60,7 @@ Abra o arquivo `GerenciarTransacoes/appsettings.Development.json` e adicione/atu
     ```
     Isso vai baixar todas as bibliotecas que o projeto precisa.
 
-## ▶️ Como Rodar o Microsserviço
+## Como Rodar o Microsserviço
 
 1.  **Inicie a aplicação:**
     No terminal, entre na pasta do projeto principal e execute:
@@ -70,7 +70,7 @@ Abra o arquivo `GerenciarTransacoes/appsettings.Development.json` e adicione/atu
     ```
     Aguarde a mensagem "Application started" (aplicação iniciada). O serviço estará disponível em `http://localhost:5010` (ou uma porta parecida que aparecerá no terminal).
 
-## 🚀 Como Testar os Endpoints da API
+## Como Testar os Endpoints da API
 
 Com o microsserviço rodando, você pode usar o **Thunder Client** no VS Code (foi o que eu usei) para enviar requisições.
 
@@ -98,7 +98,7 @@ Os endereços (endpoints) sempre começam com `/transactions`.
     * `201 Created` (sucesso) e os detalhes da transação criada.
     * Um erro `400 Bad Request` se os dados enviados estiverem incorretos.
 
-## ✅ Como Rodar os Testes Unitários
+## Como Rodar os Testes Unitários
 
 Para garantir que a lógica do projeto está funcionando corretamente:
 
