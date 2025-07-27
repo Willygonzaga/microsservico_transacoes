@@ -36,16 +36,16 @@ Antes de começar, certifique-se de ter estas ferramentas instaladas no seu comp
         * **Pelo VS Code:** Abra o VS Code, vá em `Terminal` > `Novo Terminal` (`Ctrl + '`) e navegue até sua pasta desejada.
     * Uma vez no terminal, dentro da pasta que você escolheu, digite o comando para baixar o projeto:
         ```bash
-        git clone [https://github.com/Willygonzaga/microsservico_transacoes.git](https://github.com/Willygonzaga/microsservico_transacoes.git)
+        git clone https://github.com/Willygonzaga/microsservico_transacoes.git
         ```
     * Após o download, entre na pasta do projeto:
         ```bash
         cd microsservico_transacoes
         ```
-    * **Importante:** Agora, abra a pasta `microsservico_transacoes` no VS Code (foi o que utilizei). Vá em `Arquivo` > `Abrir Pasta...` e selecione `microsservico_transacoes`. Isso garantirá que o VS Code reconheça todo o projeto.
+    * **Importante:** Agora, abra a pasta `microsservico_transacoes` no VS Code (foi o editor de código que utilizei). Vá em `Arquivo` > `Abrir Pasta...` e selecione `microsservico_transacoes`. Isso garantirá que o VS Code reconheça todo o projeto.
 
 2.  **Construa a imagem Docker:**
-    Este é o método recomendado para rodar. Ainda no terminal, na pasta `microsservico_transacoes` (a raiz do projeto):
+    Se quiser rodar com esse método. Ainda no terminal, na pasta `microsservico_transacoes` (a raiz do projeto):
     ```bash
     docker build -t gerenciartransacoes-api .
     ```
@@ -110,6 +110,8 @@ Seu microsserviço pode ser executado de duas formas principais: usando **Docker
 1.  **Inicie o contêiner Docker:**
     No terminal (já na raiz do projeto `microsservico_transacoes`), rode este comando. Ele vai iniciar sua aplicação dentro do Docker e a deixar acessível na porta `5010` do seu computador.
 
+    **Atenção para usuários de PowerShell (Windows):** O comando abaixo usa `\` para quebra de linha. No PowerShell, você deve usar a crase ` ` `` ` ` ` ` no lugar da barra invertida, ou simplesmente copiar todo o comando e colá-lo em uma única linha, sem quebras.
+
     ```bash
     docker run -d -p 5010:8080 --name gerenciartransacoes-app \
         -e "MongoDbSettings__ConnectionString=COLE_AQUI_SUA_CONNECTION_STRING_DO_MONGO" \
@@ -141,6 +143,7 @@ Se você preferir não usar Docker ou precisar de uma execução mais rápida pa
     ```bash
     cd GerenciarTransacoes
     ```
+3.  **Executar a aplicação:**    
     E depois rode o projeto:
     ```bash
     dotnet run
@@ -149,7 +152,7 @@ Se você preferir não usar Docker ou precisar de uma execução mais rápida pa
 
 ## Como Testar a API
 
-Com o microsserviço rodando (seja com Docker ou .NET SDK), você pode testar seus "endereços" (endpoints) usando o Thunder Client no VS Code, ou seu navegador.
+Com o microsserviço rodando (seja com Docker ou .NET SDK), você pode testar seus "endereços" (endpoints) usando o Thunder Client no VS Code, ou no próprio navegador com o Swagger.
 
 ### 1. Documentação Interativa (Swagger/OpenAPI)
 
@@ -183,7 +186,7 @@ Você verá uma página onde pode visualizar e testar todos os endpoints da API.
     ```bash
     dotnet test tests/GerenciarTransacoes.Aplicacao.Tests/GerenciarTransacoes.Aplicacao.Tests.csproj
     ```
-    Vai aparecer uma mensagem no final indicando que todos os testes passaram (ex: "bem-sucedido: 8").
+    Vai aparecer uma mensagem no final indicando se todos os testes passaram (ex: "bem-sucedido: 8").
 
 ---
 ## Desenvolvedor
